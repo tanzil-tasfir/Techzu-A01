@@ -221,3 +221,12 @@ to match across all required Android/iOS icon sizes.
 - `helmet` security headers, `express-rate-limit` on auth routes
 - Password changes require the current password; 
 - username changes reissue the JWT so the new identity is reflected immediately;
+
+
+---
+
+## User Manual
+- Install the apk
+- Create a Profile from sign up
+- The sign In with credentials user name/email and password
+Done.
