@@ -3,7 +3,6 @@ import { View, Text, Image, StyleSheet } from 'react-native';
 import { colors } from '../theme/colors';
 
 /**
- * Brand logo mark, optionally paired with the "Mini Social" wordmark.
  * `size` controls the mark's pixel size; the wordmark scales with it.
  */
 export default function Logo({ size = 44, withWordmark = false, dark = false }) {
