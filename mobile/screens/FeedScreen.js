@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -55,27 +55,32 @@ export default function FeedScreen({ navigation, route }) {
     setLoading(false);
   }, [load, usernameFilter]);
 
-  // Refresh the feed whenever this screen regains focus (e.g. after creating a post,
-  // or after being deep-linked here from a tapped push notification)
+  // Refresh the feed whenever this screen regains focus (e.g. after creating a post)
   useFocusEffect(
     useCallback(() => {
-      const focusPostId = route.params?.focusPostId;
-      (async () => {
-        await initialLoad();
-        if (focusPostId) {
-          navigation.setParams({ focusPostId: undefined });
-          try {
-            const { posts: fresh } = await fetchPosts({ page: 1, limit: PAGE_LIMIT });
-            const target = fresh.find((p) => p.id === focusPostId);
-            if (target) setActivePost(target);
-          } catch {
-            // best-effort: if the lookup fails, the feed itself is still refreshed above
-          }
-        }
-      })();
+      initialLoad();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [usernameFilter, route.params?.focusPostId])
+    }, [usernameFilter])
   );
+
+  // Deep-link from a tapped notification. Runs on ANY change to this param —
+  // not just on focus — because if the app is already showing Feed when the
+  // notification is tapped, no focus event fires; only the param changes.
+  useEffect(() => {
+    const focusPostId = route.params?.focusPostId;
+    if (!focusPostId) return;
+    navigation.setParams({ focusPostId: undefined });
+    (async () => {
+      try {
+        const { posts: fresh } = await fetchPosts({ page: 1, limit: PAGE_LIMIT });
+        setPosts(fresh);
+        const target = fresh.find((p) => p.id === focusPostId);
+        if (target) setActivePost(target);
+      } catch (err) {
+        setError(err.message);
+      }
+    })();
+  }, [route.params?.focusPostId]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -158,21 +163,30 @@ export default function FeedScreen({ navigation, route }) {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.searchBar}>
-          <Ionicons name="search" size={18} color={colors.textMuted} style={{ marginRight: 8 }} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Filter by username..."
-            placeholderTextColor={colors.textMuted}
-            autoCapitalize="none"
-            value={usernameFilter}
-            onChangeText={setUsernameFilter}
-          />
-          {!!usernameFilter && (
-            <TouchableOpacity onPress={() => setUsernameFilter('')}>
-              <Ionicons name="close-circle" size={18} color={colors.textMuted} />
-            </TouchableOpacity>
-          )}
+        <View style={styles.searchRow}>
+          <TouchableOpacity
+            style={styles.bellBtn}
+            onPress={() => navigation.navigate('Notifications')}
+            accessibilityLabel="Notifications"
+          >
+            <Ionicons name="notifications-outline" size={20} color={colors.textOnPrimary} />
+          </TouchableOpacity>
+          <View style={styles.searchBar}>
+            <Ionicons name="search" size={18} color={colors.textMuted} style={{ marginRight: 8 }} />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Filter by username..."
+              placeholderTextColor={colors.textMuted}
+              autoCapitalize="none"
+              value={usernameFilter}
+              onChangeText={setUsernameFilter}
+            />
+            {!!usernameFilter && (
+              <TouchableOpacity onPress={() => setUsernameFilter('')}>
+                <Ionicons name="close-circle" size={18} color={colors.textMuted} />
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       </LinearGradient>
 
@@ -274,8 +288,18 @@ const styles = StyleSheet.create({
     borderRadius: radii.pill,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    marginTop: spacing.lg,
+    flex: 1,
     ...shadow.card,
+  },
+  searchRow: { flexDirection: 'row', alignItems: 'center', marginTop: spacing.lg },
+  bellBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: radii.sm,
+    backgroundColor: 'rgba(255,255,255,0.16)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
   },
   searchInput: { flex: 1, fontSize: 14, color: colors.textPrimary },
   emptyWrap: { alignItems: 'center', marginTop: 70 },

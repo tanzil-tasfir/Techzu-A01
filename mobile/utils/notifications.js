@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
@@ -12,8 +13,6 @@ Notifications.setNotificationHandler({
   }),
 });
 
-
-// skip registration quietly instead of throwing — a development or production
 // build is required for real push notifications.
 const isExpoGo = Constants.appOwnership === 'expo';
 
@@ -86,4 +85,27 @@ export function addNotificationListeners({ onReceive, onTap }) {
     receivedSub.remove();
     responseSub.remove();
   };
+}
+
+// Local notification history (for the in app Notifications screen)
+const HISTORY_KEY = 'notificationHistory';
+const HISTORY_MAX = 50;
+
+export async function addNotificationToHistory({ title, body, data }) {
+  try {
+    const list = await getNotificationHistory();
+    const next = [
+      { id: String(Date.now()), title, body, data, receivedAt: new Date().toISOString() },
+      ...list,
+    ].slice(0, HISTORY_MAX);
+    await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+    return next;
+  } catch {
+    return [];
+  }
+}
+
+export async function getNotificationHistory() {
+  const raw = await AsyncStorage.getItem(HISTORY_KEY);
+  return raw ? JSON.parse(raw) : [];
 }
