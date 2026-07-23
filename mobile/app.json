@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "Techzu Social Media",
+    "slug": "techzu-social-media",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#6366F1"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "android": {
+      "package": "com.techzu.socialmedia",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#6366F1"
+      },
+      "googleServicesFile": "./google-services.json",
+      "permissions": ["NOTIFICATIONS"]
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.techzu.socialmedia"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#6366F1"
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "https://your-backend-domain.com"
+    }
+  }
+}
