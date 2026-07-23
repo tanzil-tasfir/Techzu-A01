@@ -74,7 +74,7 @@ export default function FeedScreen({ navigation, route }) {
       try {
         const { posts: fresh } = await fetchPosts({ page: 1, limit: PAGE_LIMIT });
         setPosts(fresh);
-        const target = fresh.find((p) => p.id === focusPostId);
+        const target = fresh.find((p) => String(p.id) === String(focusPostId));
         if (target) setActivePost(target);
       } catch (err) {
         setError(err.message);
