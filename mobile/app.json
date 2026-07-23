@@ -35,7 +35,7 @@
       ]
     ],
     "extra": {
-      "apiUrl": "https://your-backend-domain.com"
+      "apiUrl": "https://techzu-social-media-api.onrender.com"
     }
   }
 }

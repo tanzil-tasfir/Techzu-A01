@@ -21,7 +21,7 @@ import { colors, radii, spacing, shadow } from '../theme/colors';
 
 const PAGE_LIMIT = 10;
 
-export default function FeedScreen({ navigation }) {
+export default function FeedScreen({ navigation, route }) {
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
@@ -55,12 +55,26 @@ export default function FeedScreen({ navigation }) {
     setLoading(false);
   }, [load, usernameFilter]);
 
-  // Refresh the feed whenever this screen regains focus (e.g. after creating a post)
+  // Refresh the feed whenever this screen regains focus (e.g. after creating a post,
+  // or after being deep-linked here from a tapped push notification)
   useFocusEffect(
     useCallback(() => {
-      initialLoad();
+      const focusPostId = route.params?.focusPostId;
+      (async () => {
+        await initialLoad();
+        if (focusPostId) {
+          navigation.setParams({ focusPostId: undefined });
+          try {
+            const { posts: fresh } = await fetchPosts({ page: 1, limit: PAGE_LIMIT });
+            const target = fresh.find((p) => p.id === focusPostId);
+            if (target) setActivePost(target);
+          } catch {
+            // best-effort: if the lookup fails, the feed itself is still refreshed above
+          }
+        }
+      })();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [usernameFilter])
+    }, [usernameFilter, route.params?.focusPostId])
   );
 
   const onRefresh = async () => {

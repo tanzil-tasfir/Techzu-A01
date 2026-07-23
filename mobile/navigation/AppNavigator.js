@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
 import LoginScreen from '../screens/LoginScreen';
@@ -12,6 +12,7 @@ import UserProfileScreen from '../screens/UserProfileScreen';
 import { colors } from '../theme/colors';
 
 const Stack = createNativeStackNavigator();
+export const navigationRef = createNavigationContainerRef();
 
 function AuthStack() {
   return (
@@ -52,5 +53,5 @@ export default function AppNavigator() {
     );
   }
 
-  return <NavigationContainer>{user ? <AppStack /> : <AuthStack />}</NavigationContainer>;
+  return <NavigationContainer ref={navigationRef}>{user ? <AppStack /> : <AuthStack />}</NavigationContainer>;
 }
