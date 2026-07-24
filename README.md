@@ -84,8 +84,8 @@ techzu-social-media/
 │   │   ├── db/               Connection pool + schema.sql
 │   │   ├── routes/            auth.js, posts.js, users.js
 │   │   ├── middleware/         JWT auth, error handling
-│   │   └── utils/firebase.js   Server-side FCM push sending
-│   └── README.md              Full backend docs + API reference
+│   └── utils/firebase.js   Server-side FCM push sending
+│
 │
 ├── mobile/                 Expo React Native app
 │   ├── screens/              Login, Signup, Feed, CreatePost, Profile,
@@ -95,8 +95,7 @@ techzu-social-media/
 │   ├── navigation/AppNavigator.js
 │   ├── context/AuthContext.js  Session state + persistence
 │   ├── api/                   Axios clients (auth, posts)
-│   ├── utils/notifications.js  Push registration + local history
-│   └── README.md              Full mobile docs + APK build steps
+│   └── utils/notifications.js  Push registration + local history
 │
 └── render.yaml              One-click Render.com backend deploy blueprint
 ```
@@ -135,9 +134,6 @@ Base URL: your backend's host (local: `http://localhost:4000`).
 | POST | `/posts/:id/like` | ✅ | Toggle like/unlike |
 | POST | `/posts/:id/comment` | ✅ | Add a comment (triggers push to post owner) |
 | GET  | `/posts/:id/comments` | ✅ | Paginated comments for a post |
-
-
-Full request/response shapes are documented in `backend/README.md`.
 
 ---
 
